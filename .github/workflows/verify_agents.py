@@ -38,7 +38,7 @@ PLATFORM_MAP = {
 DEFAULT_TIMEOUT = 10  # seconds
 STARTUP_GRACE = 2  # seconds to wait before checking if process is alive
 DEFAULT_SANDBOX_DIR = ".sandbox"
-DEFAULT_AUTH_TIMEOUT = 30  # seconds for ACP handshake
+DEFAULT_AUTH_TIMEOUT = 60  # seconds for ACP handshake (includes npx download time)
 
 
 class Result(NamedTuple):

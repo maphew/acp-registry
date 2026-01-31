@@ -119,7 +119,7 @@ def run_auth_check(
     cmd: list[str],
     cwd: Path,
     env: dict[str, str] | None = None,
-    timeout: float = 30.0,
+    timeout: float = 60.0,
 ) -> AuthCheckResult:
     """Verify an agent supports ACP authentication.
 
