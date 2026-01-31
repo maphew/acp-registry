@@ -56,19 +56,36 @@
 
 ### Binary Distribution
 
-For standalone executables:
+For standalone executables. **Binary distributions must support all operating systems** (macOS, Linux, and Windows):
 
 ```json
 {
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/.../release.zip",
+        "archive": "https://github.com/.../darwin-arm64.tar.gz",
         "cmd": "./your-binary",
-        "args": ["acp"],
-        "env": {
-          "OPTIONAL_VAR": "value"
-        }
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/.../darwin-x64.tar.gz",
+        "cmd": "./your-binary",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/.../linux-arm64.tar.gz",
+        "cmd": "./your-binary",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/.../linux-x64.tar.gz",
+        "cmd": "./your-binary",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/.../windows-x64.zip",
+        "cmd": "your-binary.exe",
+        "args": ["acp"]
       }
     }
   }
@@ -76,6 +93,8 @@ For standalone executables:
 ```
 
 Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-x86_64`, `windows-aarch64`, `windows-x86_64`
+
+> **Note**: At minimum, you must provide builds for **darwin** (macOS), **linux**, and **windows**. Providing only one OS (e.g., macOS-only) will fail validation.
 
 ### npm Package (npx)
 
@@ -171,6 +190,10 @@ Entries are validated against the [JSON Schema](agent.schema.json).
 - `linux-aarch64`, `linux-x86_64`
 - `windows-aarch64`, `windows-x86_64`
 
+**Cross-platform requirement** (for binary):
+- Binary distributions must include builds for **all operating systems**: darwin (macOS), linux, and windows
+- At least one architecture per OS is required (e.g., `darwin-aarch64`, `linux-x86_64`, `windows-x86_64`)
+
 **Version matching:**
 - Distribution versions must match the entry's `version` field
 - Binary URLs containing version (e.g., `/download/v1.0.0/`) are checked
@@ -200,6 +223,29 @@ If an `icon.svg` is provided:
   - `fill` attributes: only `currentColor`, `none`, or `inherit` allowed
   - `stroke` attributes: only `currentColor`, `none`, or `inherit` allowed
   - No hardcoded colors (`#FF0000`, `red`, `rgb(...)`, etc.)
+
+### Authentication Validation
+
+Agents are verified to support ACP authentication methods as described in [AUTHENTICATION.md](AUTHENTICATION.md). The CI runs:
+
+```bash
+python3 .github/workflows/verify_agents.py --auth-check
+```
+
+**What gets checked:**
+- Agent must return `authMethods` in the `initialize` response
+- At least one method must have `type: "agent"` or `type: "terminal"`
+- See [AUTHENTICATION.md](AUTHENTICATION.md) for implementation details
+
+**Verify your agent locally:**
+
+```bash
+# Verify a single agent
+python3 .github/workflows/verify_agents.py --auth-check --agent your-agent-id
+
+# Verify multiple agents
+python3 .github/workflows/verify_agents.py --auth-check --agent agent1,agent2
+```
 
 ### Run Validation Locally
 

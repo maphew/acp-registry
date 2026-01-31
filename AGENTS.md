@@ -41,6 +41,7 @@ Each directory contains either `agent.json` (for agents) or `extension.json` (fo
 - `id`: lowercase, hyphens only, must match directory name
 - `version`: semantic versioning (e.g., `1.0.0`)
 - `distribution`: at least one of `binary`, `npx`, `uvx`
+- `binary` distribution: must include builds for all operating systems (darwin, linux, windows)
 - `icon.svg`: must be SVG format, 16x16, monochrome using `currentColor` (enables theming)
 - **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages)
 
@@ -87,9 +88,9 @@ Run build to validate: `uv run --with jsonschema .github/workflows/build_registr
 
 ## Distribution Types
 
-- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.)
-- `npx`: npm packages
-- `uvx`: PyPI packages
+- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). **Must support all operating systems** (darwin, linux, windows).
+- `npx`: npm packages (cross-platform by default)
+- `uvx`: PyPI packages (cross-platform by default)
 
 ## Icon Requirements
 
@@ -110,3 +111,13 @@ Using `currentColor` enables icons to adapt to different themes (light/dark mode
 **Invalid patterns:**
 - Hardcoded colors: `fill="#FF5500"`, `fill="red"`, `stroke="rgb(0,0,0)"`
 - Missing currentColor: `fill` or `stroke` without `currentColor`
+
+## Authentication Validation
+
+Agents must support ACP authentication. The CI verifies auth via `.github/workflows/verify_agents.py --auth-check`.
+
+**Requirements:**
+- Return `authMethods` array in `initialize` response
+- At least one method must have type `"agent"` or `"terminal"`
+
+See [AUTHENTICATION.md](AUTHENTICATION.md) for details on implementing auth methods.
